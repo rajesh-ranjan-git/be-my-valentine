@@ -81,6 +81,7 @@ const Valentine = () => {
 
   const handleYesClick = (): void => {
     setAnswered(true);
+    setShowNoButton(false);
 
     triggerConfetti();
 
