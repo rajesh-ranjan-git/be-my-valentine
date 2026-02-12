@@ -7,7 +7,7 @@ const FallingHearts = () => {
   const [fallingHearts, setFallingHearts] = useState<FallingHeart[]>([]);
 
   useEffect(() => {
-    const hearts: FallingHeart[] = Array.from({ length: 40 }, (_, i) => ({
+    const hearts: FallingHeart[] = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 5,
@@ -20,23 +20,24 @@ const FallingHearts = () => {
 
   return (
     <>
-      {fallingHearts?.length &&
-        fallingHearts.map((heart) => (
-          <div
-            key={heart.id}
-            className="-top-12 z-1 absolute pointer-events-none falling-heart"
-            style={
-              {
-                left: `${heart.left}%`,
-                fontSize: `${heart.size}px`,
-                "--duration": `${heart.duration}s`,
-                "--delay": `${heart.delay}s`,
-              } as React.CSSProperties
-            }
-          >
-            ❤️
-          </div>
-        ))}
+      {fallingHearts?.length
+        ? fallingHearts.map((heart) => (
+            <div
+              key={heart.id}
+              className="-top-12 z-1 absolute pointer-events-none falling-heart"
+              style={
+                {
+                  left: `${heart.left}%`,
+                  fontSize: `${heart.size}px`,
+                  "--duration": `${heart.duration}s`,
+                  "--delay": `${heart.delay}s`,
+                } as React.CSSProperties
+              }
+            >
+              ❤️
+            </div>
+          ))
+        : null}
     </>
   );
 };
