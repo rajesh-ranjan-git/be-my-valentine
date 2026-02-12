@@ -10,6 +10,19 @@ import ExplosionHearts from "@/components/explosionHearts";
 const Valentine = () => {
   const [answered, setAnswered] = useState<boolean>(false);
   const [explosionHearts, setExplosionHearts] = useState<ExplosionHeart[]>([]);
+  const [showNoButton, setShowNoButton] = useState<boolean>(false);
+  const [noPosition, setNoPosition] = useState<number>(0);
+
+  const positions = [
+    "top-6 right-6",
+    "top-6 left-6",
+    "bottom-6 left-6",
+    "bottom-6 right-6",
+  ];
+
+  const moveNoButton = () => {
+    setNoPosition((prev) => (prev + 1) % positions.length);
+  };
 
   const triggerConfetti = (): void => {
     const duration = 3000;
@@ -92,12 +105,26 @@ const Valentine = () => {
   return (
     <div className="z-2 relative flex flex-col justify-center items-center bg-white/95 p-4 rounded-xl w-[84%] max-w-200 h-[90vh] max-h-120 text-pink-600 text-lg md:text-xl lg:text-2xl text-center">
       {!answered ? (
-        <ValentineProposal handleYesClick={handleYesClick} />
+        <ValentineProposal
+          showNoButton={showNoButton}
+          setShowNoButton={setShowNoButton}
+          handleYesClick={handleYesClick}
+        />
       ) : (
         <ValentineAccepted />
       )}
 
       <ExplosionHearts explosionHearts={explosionHearts} />
+
+      {showNoButton && (
+        <button
+          onMouseEnter={moveNoButton}
+          onTouchStart={moveNoButton}
+          className={`absolute ${positions[noPosition]} transition-all duration-300 ease-in-out bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap cursor-pointer select-none`}
+        >
+          No 😢
+        </button>
+      )}
     </div>
   );
 };
