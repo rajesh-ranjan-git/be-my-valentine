@@ -16,6 +16,8 @@ const Valentine = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const celebrationAudioRef = useRef<HTMLAudioElement>(null);
+  const errorAudioRef = useRef<HTMLAudioElement>(null);
 
   const calculateTranslateValues = () => {
     if (!containerRef.current || !buttonRef.current) return;
@@ -40,31 +42,19 @@ const Valentine = () => {
     setTranslateValues(positions[noPosition]);
   };
 
-  useEffect(() => {
-    if (showNoButton) {
-      setTimeout(() => {
-        calculateTranslateValues();
-      }, 0);
-    }
-  }, [showNoButton, noPosition]);
+  const playErrorSound = () => {
+    if (!errorAudioRef.current) return;
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (showNoButton) {
-        calculateTranslateValues();
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [showNoButton, noPosition]);
+    errorAudioRef.current.currentTime = 0;
+    errorAudioRef.current.play().catch(() => {});
+  };
 
   const moveNoButton = () => {
     setNoPosition((prev) => (prev + 1) % 4);
   };
 
   const triggerConfetti = (): void => {
-    const duration = 3000;
+    const duration = 10000;
     const animationEnd = Date.now() + duration;
     const defaults = {
       startVelocity: 30,
@@ -122,6 +112,12 @@ const Valentine = () => {
     setAnswered(true);
     setShowNoButton(false);
 
+    if (celebrationAudioRef.current) {
+      celebrationAudioRef.current
+        .play()
+        .catch((err) => console.error("Celebration audio play failed:", err));
+    }
+
     triggerConfetti();
 
     const heartExplosion: ExplosionHeart[] = Array.from(
@@ -139,19 +135,47 @@ const Valentine = () => {
 
     setTimeout(() => {
       setExplosionHearts([]);
-    }, 2000);
+    }, 10000);
   };
+
+  useEffect(() => {
+    if (showNoButton) {
+      setTimeout(() => {
+        calculateTranslateValues();
+      }, 0);
+    }
+  }, [showNoButton, noPosition]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (showNoButton) {
+        calculateTranslateValues();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [showNoButton, noPosition]);
 
   return (
     <div
       ref={containerRef}
-      className="z-2 relative flex flex-col justify-center items-center bg-white/95 p-4 rounded-xl w-[84%] max-w-200 h-[90vh] max-h-120 text-pink-600 text-lg md:text-xl lg:text-2xl text-center"
+      className="z-2 relative flex flex-col justify-center items-center bg-white/95 shadow-2xl p-4 rounded-xl w-[84%] max-w-200 h-[90vh] max-h-120 text-pink-600 text-lg md:text-xl lg:text-2xl text-center"
     >
+      <audio
+        ref={celebrationAudioRef}
+        src="/sounds/celebration-sound.mp3"
+        preload="auto"
+      />
+
+      <audio ref={errorAudioRef} src="/sounds/error-sound.mp3" preload="auto" />
+
       {!answered ? (
         <ValentineProposal
           showNoButton={showNoButton}
           setShowNoButton={setShowNoButton}
           handleYesClick={handleYesClick}
+          playErrorSound={playErrorSound}
         />
       ) : (
         <ValentineAccepted />
@@ -162,6 +186,10 @@ const Valentine = () => {
       {showNoButton && (
         <button
           ref={buttonRef}
+          onPointerDown={() => {
+            playErrorSound();
+            moveNoButton();
+          }}
           onMouseEnter={moveNoButton}
           onTouchStart={moveNoButton}
           className="top-1/2 left-1/2 absolute bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap transition-transform -translate-x-1/2 -translate-y-1/2 duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer select-none"

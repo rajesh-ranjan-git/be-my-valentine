@@ -5,6 +5,7 @@ export interface ValentineProposalProps {
   showNoButton: boolean;
   setShowNoButton: Dispatch<SetStateAction<boolean>>;
   handleYesClick: () => void;
+  playErrorSound: () => void;
 }
 
 export interface ExplosionHeartsProps {
