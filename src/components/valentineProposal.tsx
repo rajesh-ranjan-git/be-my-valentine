@@ -34,7 +34,7 @@ const ValentineProposal = ({
         <button
           onMouseEnter={() => setShowNoButton(true)}
           onTouchStart={() => setShowNoButton(true)}
-          className={`bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-300 ease-in-out cursor-pointer select-none ${showNoButton ? "opacity-0" : "opacity-100"}`}
+          className={`bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-300 ease-in-out cursor-pointer select-none transform ${showNoButton ? "opacity-0 scale-75" : "opacity-100 scale-100"}`}
         >
           No 😢
         </button>

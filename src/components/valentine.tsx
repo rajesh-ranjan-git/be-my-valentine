@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { ExplosionHeart } from "@/types/types";
 import ValentineProposal from "@/components/valentineProposal";
@@ -12,16 +12,55 @@ const Valentine = () => {
   const [explosionHearts, setExplosionHearts] = useState<ExplosionHeart[]>([]);
   const [showNoButton, setShowNoButton] = useState<boolean>(false);
   const [noPosition, setNoPosition] = useState<number>(0);
+  const [translateValues, setTranslateValues] = useState<string>("");
 
-  const positions = [
-    "top-6 right-6",
-    "top-6 left-6",
-    "bottom-6 left-6",
-    "bottom-6 right-6",
-  ];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const calculateTranslateValues = () => {
+    if (!containerRef.current || !buttonRef.current) return;
+
+    const container = containerRef.current.getBoundingClientRect();
+    const button = buttonRef.current.getBoundingClientRect();
+
+    const padding = 16;
+
+    const containerWidth = container.width;
+    const containerHeight = container.height;
+    const buttonWidth = button.width;
+    const buttonHeight = button.height;
+
+    const positions = [
+      `translate(${containerWidth / 2 - buttonWidth / 2 - padding}px, ${-(containerHeight / 2) + buttonHeight / 2 + padding}px)`,
+      `translate(${-(containerWidth / 2) + buttonWidth / 2 + padding}px, ${-(containerHeight / 2) + buttonHeight / 2 + padding}px)`,
+      `translate(${-(containerWidth / 2) + buttonWidth / 2 + padding}px, ${containerHeight / 2 - buttonHeight / 2 - padding}px)`,
+      `translate(${containerWidth / 2 - buttonWidth / 2 - padding}px, ${containerHeight / 2 - buttonHeight / 2 - padding}px)`,
+    ];
+
+    setTranslateValues(positions[noPosition]);
+  };
+
+  useEffect(() => {
+    if (showNoButton) {
+      setTimeout(() => {
+        calculateTranslateValues();
+      }, 0);
+    }
+  }, [showNoButton, noPosition]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (showNoButton) {
+        calculateTranslateValues();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [showNoButton, noPosition]);
 
   const moveNoButton = () => {
-    setNoPosition((prev) => (prev + 1) % positions.length);
+    setNoPosition((prev) => (prev + 1) % 4);
   };
 
   const triggerConfetti = (): void => {
@@ -104,7 +143,10 @@ const Valentine = () => {
   };
 
   return (
-    <div className="z-2 relative flex flex-col justify-center items-center bg-white/95 p-4 rounded-xl w-[84%] max-w-200 h-[90vh] max-h-120 text-pink-600 text-lg md:text-xl lg:text-2xl text-center">
+    <div
+      ref={containerRef}
+      className="z-2 relative flex flex-col justify-center items-center bg-white/95 p-4 rounded-xl w-[84%] max-w-200 h-[90vh] max-h-120 text-pink-600 text-lg md:text-xl lg:text-2xl text-center"
+    >
       {!answered ? (
         <ValentineProposal
           showNoButton={showNoButton}
@@ -119,9 +161,13 @@ const Valentine = () => {
 
       {showNoButton && (
         <button
+          ref={buttonRef}
           onMouseEnter={moveNoButton}
           onTouchStart={moveNoButton}
-          className={`absolute ${positions[noPosition]} transition-all duration-300 ease-in-out bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap cursor-pointer select-none`}
+          className="top-1/2 left-1/2 absolute bg-gray-100 px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 border-2 border-gray-300 rounded-full font-semibold text-gray-600 text-base md:text-lg lg:text-xl whitespace-nowrap transition-transform -translate-x-1/2 -translate-y-1/2 duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer select-none"
+          style={{
+            transform: translateValues || "translate(-50%, -50%)",
+          }}
         >
           No 😢
         </button>
