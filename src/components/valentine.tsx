@@ -46,7 +46,11 @@ const Valentine = () => {
     if (!errorAudioRef.current) return;
 
     errorAudioRef.current.currentTime = 0;
-    errorAudioRef.current.play().catch(() => {});
+    errorAudioRef.current
+      .play()
+      .catch((err) =>
+        console.error("❌ ERROR :: Error audio play failed:", err),
+      );
   };
 
   const moveNoButton = () => {
@@ -115,7 +119,9 @@ const Valentine = () => {
     if (celebrationAudioRef.current) {
       celebrationAudioRef.current
         .play()
-        .catch((err) => console.error("Celebration audio play failed:", err));
+        .catch((err) =>
+          console.error("❌ ERROR :: Celebration audio play failed:", err),
+        );
     }
 
     triggerConfetti();
@@ -164,11 +170,15 @@ const Valentine = () => {
     >
       <audio
         ref={celebrationAudioRef}
-        src="/sounds/celebration-sound.mp3"
+        src="/assets/sounds/celebration-sound.mp3"
         preload="auto"
       />
 
-      <audio ref={errorAudioRef} src="/sounds/error-sound.mp3" preload="auto" />
+      <audio
+        ref={errorAudioRef}
+        src="/assets/sounds/error-sound.mp3"
+        preload="auto"
+      />
 
       {!answered ? (
         <ValentineProposal

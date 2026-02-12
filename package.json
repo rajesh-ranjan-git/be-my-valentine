@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "boxen": "^8.0.1",
     "canvas-confetti": "^1.9.4",
+    "figlet": "^1.10.0",
+    "gradient-string": "^3.0.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
