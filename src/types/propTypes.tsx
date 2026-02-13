@@ -15,3 +15,8 @@ export interface ValentineProposalProps {
 export interface ExplosionHeartsProps {
   explosionHearts: ExplosionHeart[];
 }
+
+export interface VideoPlayerProps {
+  isModalOpen: boolean;
+  handleCloseModal: () => void;
+}
